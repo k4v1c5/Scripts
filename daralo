@@ -1,4 +1,8 @@
 #!/bin/sh
+clear
+IP = $1
+echo $IP
+
 mkdir /root/logs
 
 cp /var/log/dnsmasq.log.10.gz /root/logs/
@@ -25,25 +29,28 @@ gunzip dnsmasq.log.4.gz
 gunzip dnsmasq.log.3.gz
 gunzip dnsmasq.log.2.gz
 
-cat dnsmasq.log.10 | grep %1 | grep -v "a.root" > TEMP
-cat dnsmasq.log.9 | grep %1 | grep -v "a.root" >> TEMP
-cat dnsmasq.log.8 | grep %1 | grep -v "a.root" >> TEMP
-cat dnsmasq.log.7 | grep %1 | grep -v "a.root" >> TEMP
-cat dnsmasq.log.6 | grep %1 | grep -v "a.root" >> TEMP
-cat dnsmasq.log.5 | grep %1 | grep -v "a.root" >> TEMP
-cat dnsmasq.log.4 | grep %1 | grep -v "a.root" >> TEMP
-cat dnsmasq.log.3 | grep %1 | grep -v "a.root" >> TEMP
-cat dnsmasq.log.2 | grep %1 | grep -v "a.root" >> TEMP
-cat dnsmasq.log.1 | grep %1 | grep -v "a.root" >> TEMP
-cat dnsmasq.log | grep %1 | grep -v "a.root" >> TEMP
+cat dnsmasq.log.10 | grep $IP | grep -v "a.root" > TEMP
+cat dnsmasq.log.9 | grep $IP | grep -v "a.root" >> TEMP
+cat dnsmasq.log.8 | grep $IP | grep -v "a.root" >> TEMP
+cat dnsmasq.log.7 | grep $IP | grep -v "a.root" >> TEMP
+cat dnsmasq.log.6 | grep $IP | grep -v "a.root" >> TEMP
+cat dnsmasq.log.5 | grep $IP | grep -v "a.root" >> TEMP
+cat dnsmasq.log.4 | grep $IP | grep -v "a.root" >> TEMP
+cat dnsmasq.log.3 | grep $IP | grep -v "a.root" >> TEMP
+cat dnsmasq.log.2 | grep $IP | grep -v "a.root" >> TEMP
+cat dnsmasq.log.1 | grep $IP | grep -v "a.root" >> TEMP
+cat dnsmasq.log | grep $IP | grep -v "a.root" >> TEMP
 
 sort -b TEMP > TEMP_sort
 cat TEMP_sort | grep ".com" > com
+cat TEMP_sort | grep "facebook" > facebook
+cat TEMP_sort | grep "instagram" > instagram
+cat TEMP_sort | grep "twitter" > twitter
 cat TEMP_sort | grep "microsoft" > microsoft
-cat TEMP_sort | grep "apple/|icloud" > apple
+cat TEMP_sort | grep "apple\|icloud" > apple
 cat TEMP_sort | grep "update" > update
 cat TEMP_sort | grep "upgrade" > upgrade
-cat TEMP_sort | grep "eset/|avast/|avg/|kaspar" > antivir
+cat TEMP_sort | grep "eset\|avast\|avg\|kaspar" > antivir
 
 for i in $(seq 01 31);
 do for j in 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23;
