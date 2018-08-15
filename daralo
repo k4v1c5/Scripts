@@ -58,4 +58,7 @@ do egrep -io "$i $j" TEMP_sort | sort | echo "$i $j:"`wc -l` >> TEMP_dates;
 done;
 done
 
+clear
+echo Cleaning...
 rm dnsmasq*.*
+echo OK.
