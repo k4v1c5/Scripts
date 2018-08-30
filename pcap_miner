@@ -1,0 +1,94 @@
+#!/bin/bash
+# pcap_miner script 
+
+# progress bar function
+prog() {
+    local w=80 p=$1;  shift
+    # create a string of spaces, then change them to dots
+    printf -v dots "%*s" "$(( $p*$w/100 ))" ""; dots=${dots// /.};
+    # print those dots on a fixed-width space plus the percentage etc. 
+    printf "\r\e[K|%-*s| %3d %% %s" "$w" "$dots" "$p" "$*"; 
+}
+
+clear
+echo '****************************'
+echo '*         PCAP_MINER       *'
+echo '*           v 1.1          *'
+echo '****************************'
+
+echo -n "List files...."
+ls | grep pcap > nevek.txt && echo "Ready."
+a=$(wc -l < nevek.txt)
+let x=$a+3
+j=0
+
+for i in `cat ./nevek.txt`
+	do 
+	   let j++
+	   let y=(100/$x)*$j
+	clear	
+	echo "Mining 1. phase (User-Agent, Plain_text, Antivirus, Hosts)"   
+	prog $y still working...
+	   #stat ../${i/.pcap*/} | grep 'Módosítás:'>>usera
+	   tcpdump -vvAls0 -r $i 2>&1| grep 'User-Agent:'>>usera_temp
+	   tcpdump port http or port ftp or port smtp or port imap or port pop3 or port telnet -lA -r $i 2>&1 | egrep -i -B5 'pass=\|pwd=\|log=\|login=\|user=\|username=\|pw=\|passw=\|passwd=\|password=\|pass:\|user:\|username:\|password:\|login:\|pass \|user ' >> plain_temp
+	   tcpdump -vvAls0 -r $i 2>&1| grep "avast\|norton\|avg\|eset\|commodo\|avira\|kaspersky\|mcafee\|defender">>virus_temp
+           tcpdump -vvAls0 -r $i 2>&1| grep "Host:">>hosts_temp
+	   
+done ; echo
+sleep 2
+clear
+let j++
+let y=(100/$x)*$j
+echo "Mining 2. phase (search for OS)...."
+prog $y still working...
+cut -f2 -d$'\t' usera_temp > usera
+cat usera | grep "NT 5.1\|NT 5.2" > XP_temp
+cat usera | grep "NT 6.0" > Vista_temp
+cat usera | grep "NT 6.1" > 7_temp
+cat usera | grep "NT 6.2" > 8_temp
+cat usera | grep "NT 6.3" > 81_temp
+cat usera | grep "NT 10" > 10_temp
+cat usera | grep "Linux" > Linux_temp
+cat usera | grep "Android" > Android_temp
+cat usera | grep "iPhone\|iPad\|Mac" > Apple_temp
+
+sleep 2
+clear
+let j++
+let y=(100/$x)*$j
+echo "Minig 3. phase (Sorting)...."
+prog $y still working...
+sort -u usera > user_agents
+cut -f2 -d$'\t' hosts_temp | sort -u > hosts
+sort -u plain_temp > plain
+sort -u virus_temp > virus
+cat XP_temp | grep "User-Agent" | sort -u > windowsXP
+cat Vista_temp | grep "User-Agent" | sort -u  > windowsVista
+cat 7_temp | grep "User-Agent" | sort -u  > windows7
+cat 8_temp | grep "User-Agent" | sort -u  > windows8
+cat 81_temp | grep "User-Agent" | sort -u  > windows81
+cat 10_temp | grep "User-Agent" | sort -u  > windows10
+cat Linux_temp | grep "User-Agent" | sort -u  > Linux
+cat Android_temp | grep "User-Agent" | sort -u  > Android
+cat Apple_temp | grep "User-Agent" | sort -u  > Apple
+sleep 2
+clear
+let j++
+let y=(100/$x)*$j
+echo "Mining 4. phase (cleaning)...."
+prog $y still working...
+find . -not -empty > results_temp
+cat results_temp | grep -v "pcap\|pcap_miner\|temp\|nevek" > report
+rm *temp
+rm nevek.txt
+sleep 2
+clear
+echo "Mining...."
+prog 100 finish.
+echo
+echo "Reasults files:"
+cat report
+
+
+
