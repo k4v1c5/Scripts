@@ -1,6 +1,21 @@
 #!/bin/bash
 # pcap_miner script 
 
+clear
+echo '****************************'
+echo '*         PCAP_MINER       *'
+echo '*           v 2.0          *'
+echo '****************************'
+
+tshark -r $filepcap -Y http.request -T fields -e http.host -e http.user_agent |sort usera_temp | uniquie -u |sort
+tshark -r $filepcap -Y http.request -T fields -e http
+tshark -r $filepcap -Y 'http.request.method == POST and tcp contains "password"' | grep password|sort plantext
+
+tcpdump port http or port ftp or port smtp or port imap or port pop3 or port telnet -lA -r $i 2>&1 | egrep -i -B5 'pass=\|pwd=\|log=\|login=\|user=\|username=\|pw=\|passw=\|passwd=\|password=\|pass:\|user:\|username:\|password:\|login:\|pass \|user ' >> plain_temp
+tcpdump -vvAls0 -r $i 2>&1| grep "avast\|norton\|avg\|eset\|commodo\|avira\|kaspersky\|mcafee\|defender">>virus_temp
+
+
+
 # progress bar function
 prog() {
     local w=80 p=$1;  shift
@@ -10,11 +25,6 @@ prog() {
     printf "\r\e[K|%-*s| %3d %% %s" "$w" "$dots" "$p" "$*"; 
 }
 
-clear
-echo '****************************'
-echo '*         PCAP_MINER       *'
-echo '*           v 1.1          *'
-echo '****************************'
 
 echo -n "List files...."
 ls | grep pcap > nevek.txt && echo "Ready."
